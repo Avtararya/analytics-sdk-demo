@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Demo Restaurant</title>
+  </head>
+  <body>
+    <h1>Demo Restaurant</h1>
+    <button id="cart">Add Pizza to cart</button>
+
+    <button id="order">Place order</button>
+    <script src="analytics.js"></script>
+    <script>
+      const analytics = new Analytics();
+      analytics.init({ apiKey: "abc123" });
+      analytics.page();
+
+      document.getElementById("cart").addEventListener("click", () => {
+        document.getElementById("order").addEventListener("click", async () => {
+          await fetch("/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              visitorId: analytics.getVisitorId(),
+              item: "Pizza",
+            }),
+          });
+        });
+        analytics.track("add_to_cart", { item: "Pizza" });
+      });
+    </script>
+  </body>
+</html>
