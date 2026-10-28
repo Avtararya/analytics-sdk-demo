@@ -10,11 +10,11 @@ Browser SDK ──┐
 Server helper ┘
 ```
 
-- **Browser SDK:** \_\_\_\_
-- **Server helper:** \_\_\_\_
-- **API:** \_\_\_\_
-- **Database:** \_\_\_\_
-- **Dashboard:** \_\_\_\_
+- **Browser SDK:** Tracks visitor actions, creates visitor and session IDs, queues events, and sends them to the backend.
+- **Server helper:** Tracks events that happen on the server, such as successful orders, and sends them to the API.
+- **API:** Receives events, validates the API key and input, and saves valid events to the database.
+- **Database:** Stores events with unique event IDs to prevent duplicate records.
+- **Dashboard:** Calls the stats API and displays analytics, such as total events, visitors, and daily activity.
 
 ## Setup
 
