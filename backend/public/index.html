@@ -1,31 +1,75 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>Demo Restaurant</title>
   </head>
   <body>
     <h1>Demo Restaurant</h1>
-    <button id="cart">Add Pizza to cart</button>
 
-    <button id="order">Place order</button>
-    <script src="analytics.js"></script>
+    <button id="cart">Add Pizza to Cart</button>
+
+    <h2>Cart</h2>
+    <p>Pizzas added to cart: <strong id="cartCount">0</strong></p>
+
+    <button id="order">Place Order</button>
+
+    <script src="./analytics.js"></script>
     <script>
-      const analytics = new Analytics();
-      analytics.init({ apiKey: "abc123" });
-      analytics.page();
+      // Initialize analytics if the SDK loaded successfully
+      let analytics = null;
+
+      try {
+        if (typeof Analytics !== "undefined") {
+          analytics = new Analytics();
+          analytics.init({ apiKey: "abc123" });
+          analytics.page();
+        }
+      } catch (error) {
+        console.error("Analytics initialization failed:", error);
+      }
+
+      // Count pizza clicks
+      let cartCount = 0;
 
       document.getElementById("cart").addEventListener("click", () => {
-        document.getElementById("order").addEventListener("click", async () => {
-          await fetch("/orders", {
+        cartCount++;
+
+        document.getElementById("cartCount").textContent = cartCount;
+
+        if (analytics) {
+          analytics.track("add_to_cart", {
+            item: "Pizza",
+            count: cartCount,
+          });
+        }
+      });
+
+      // Place order
+      document.getElementById("order").addEventListener("click", async () => {
+        if (cartCount === 0) {
+          alert("Please add a pizza first.");
+          return;
+        }
+
+        try {
+          const response = await fetch("/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              visitorId: analytics.getVisitorId(),
+              visitorId: analytics?.getVisitorId?.() ?? null,
               item: "Pizza",
+              quantity: cartCount,
             }),
           });
-        });
-        analytics.track("add_to_cart", { item: "Pizza" });
+
+          if (!response.ok) throw new Error("Order failed");
+
+          alert("Order placed successfully!");
+        } catch (error) {
+          console.error(error);
+          alert("Could not place order. Check your backend.");
+        }
       });
     </script>
   </body>
