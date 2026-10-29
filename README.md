@@ -14,11 +14,11 @@ Server helper ┘
 - **Server helper:** Tracks events that happen on the server, such as successful orders, and sends them to the API.
 - **API:** Receives events, validates the API key and input, and saves valid events to the database.
 - **Database:** Stores events with unique event IDs to prevent duplicate records.
-- **Dashboard:** Calls the stats API and displays analytics, such as total events, visitors, and daily activity.
+- **Dashboard:** Calls the stats API and shows unique visitors, popular pages, and events per day, with a date filter. It refreshes every 5 seconds.
 
 ## Setup
 
-Requirements: Node 18 or newer, and Postgres running locally.
+Requirements: Node 20.19 or newer, and Postgres running locally.
 
 ```
 createdb analytics
@@ -46,6 +46,8 @@ npm run dev
 - Dashboard: http://localhost:5173
 
 `API_KEY=abc123` in `.env.example` is a demo key only.
+
+Run the tests with `npm test` inside the `backend` folder.
 
 ## SDK usage
 
@@ -91,4 +93,5 @@ await tracker.track("order_created", visitorId, { item: "Pizza" });
 - Events are inserted one at a time, not in bulk.
 - Stats are calculated live from raw events, with no pre-calculated totals.
 - Only the event validation is covered by tests, and there are no API-level tests yet.
-- The dashboard's default dates are fixed (26 to 28 Oct 2026). Use the date pickers to change them.
+- The dashboard shows the last 7 days by default (UTC dates). It refreshes every 5 seconds, so each open dashboard runs the 3 stats queries every 5 seconds, which is fine for a demo but not for many viewers.
+- If the backend is down, the dashboard keeps showing the last numbers and gives no error message.
